@@ -1,21 +1,18 @@
 import { useState } from 'react';
-import type { FC } from 'react';
 import { mockTelescopes } from '../modules/mockTelescopes';
 import { TelescopeCard } from '../components/TelescopeCard';
 import { Form, Row, Col, Container } from 'react-bootstrap';
 
-export const GridPage: FC = () => {
-  // Хук состояния для значения фильтра
+export const GridPage = () => {
   const [minAperture, setMinAperture] = useState<number>(0);
 
-  // Фильтруем массив на основе значения ползунка
   const filteredTelescopes = mockTelescopes.filter(
     (t) => t.aperture_cm >= minAperture
   );
 
   return (
-    <Container className="pb-5 pt-3">
-      <h4 className="mb-3">Плитка</h4>
+    // paddingBottom, чтобы контент не уходил под меню
+    <Container className="pt-3" style={{ paddingBottom: '110px' }}>
 
       <Form.Group className="mb-4 p-3 bg-light rounded shadow-sm">
         <Form.Label>Минимальный диаметр: <b>{minAperture} см</b></Form.Label>
@@ -25,6 +22,7 @@ export const GridPage: FC = () => {
           step={10}
           value={minAperture}
           onChange={(e) => setMinAperture(Number(e.target.value))}
+          style={{ accentColor: '#174B9B' }}
         />
       </Form.Group>
 

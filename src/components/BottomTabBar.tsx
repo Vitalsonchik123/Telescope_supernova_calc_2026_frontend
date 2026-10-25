@@ -3,25 +3,31 @@ import { NavLink } from 'react-router-dom';
 export const BottomTabBar = () => {
   return (
     <div className="tab-bar">
-      {/* Активные ссылки */}
       <NavLink
         to="/feed"
-        className={({ isActive }) => isActive ? "tab-item active" : "tab-item"}
+        className={({ isActive }) => `tab-item ${isActive ? 'active' : 'inactive'}`}
       >
-        Лента
+        <span className="tab-icon">▦</span>
+        <span>Лента</span>
       </NavLink>
 
-      {/* Неактивные кнопки (заглушки) */}
-      <span className="tab-item disabled">Добавить</span>
+      <span className="tab-item inactive">
+        <span className="tab-icon">＋</span>
+        <span>Добавить</span>
+      </span>
 
       <NavLink
         to="/grid"
-        className={({ isActive }) => isActive ? "tab-item active" : "tab-item"}
+        className={({ isActive }) => `tab-item ${isActive ? 'active' : 'inactive'}`}
       >
-        Плитка
+        <span className="tab-icon">❖</span>
+        <span>Плитка</span>
       </NavLink>
 
-      <span className="tab-item disabled">Вход</span>
+      {}
+      <span className="tab-item inactive">
+        <span>Вход</span>
+      </span>
     </div>
   );
 };

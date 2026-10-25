@@ -1,63 +1,110 @@
 :root {
   --bg-page: #f2f2f7;
   --bg-white: #ffffff;
-  --text-primary: #1c1c1e;
   --accent-blue: #174B9B;
   --accent-orange: #FF9400;
 }
 
-body {
-  margin: 0;
-  padding: 0;
-  background-color: #d1d1d6; /* Серый фон за пределами телефона */
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-}
-
-/* Фиксированная ширина как у мобильного телефона (390px) */
 .app-wrapper {
   width: 390px;
   max-width: 100%;
   min-height: 100vh;
   margin: 0 auto;
-  background-color: var(--bg-page);
+  background-color: #000;
   position: relative;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-}
-
-/* Отступ снизу, чтобы контент не перекрывался таб-баром */
-.content-area {
-  flex: 1;
-  padding-bottom: 70px;
-}
-
-/* Переопределяем кнопки Bootstrap на наш синий цвет */
-.btn-primary {
-  background-color: var(--accent-blue) !important;
-  border-color: var(--accent-blue) !important;
-}
-
-/* Переопределяем акценты */
-.text-primary {
-  color: var(--accent-orange) !important;
-}
-
-/* Стили для карточек в плитке */
-.telescope-card {
-  border: none;
-  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  transition: transform 0.2s;
-  background-color: var(--bg-white);
 }
 
-.telescope-card:hover {
-  transform: translateY(-4px);
+.feed-container {
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 90px);  /* Высота экрана минус высота нижней панели (90px) */
+  background-color: #000;
 }
 
-/* --- Стили для нижней навигации (Tab Bar) --- */
+.feed-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.feed-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 20px 16px 0 16px;
+  box-sizing: border-box;
+  background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 30%, transparent 60%);
+}
+
+.feed-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 10px;
+}
+
+.feed-title {
+  color: var(--accent-orange);
+  font-size: 32px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.feed-right-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  color: var(--accent-orange);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.feed-likes {
+  margin-top: 6px;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.feed-desc {
+  color: #ffffff;
+  font-size: 14px;
+  line-height: 1.4;
+  margin: 0 0 20px 0;
+  text-align: left;
+}
+
+.feed-bottom-bar {
+  background-color: #000;
+  width: calc(100% + 32px);
+  margin-left: -16px;
+  height: 60px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding-right: 20px;
+  box-sizing: border-box;
+}
+
+.next-arrow-btn {
+  background: transparent;
+  border: none;
+  color: var(--accent-orange);
+  font-size: 40px;
+  cursor: pointer;
+  line-height: 1;
+}
+
 .tab-bar {
   position: fixed;
   bottom: 0;
@@ -65,13 +112,11 @@ body {
   transform: translateX(-50%);
   width: 390px;
   max-width: 100%;
-  height: 70px;
-  background-color: var(--bg-white);
+  height: 90px;
+  background-color: #ffffff;
   display: flex;
-  justify-content: space-around;
+  justify-content: space-evenly;
   align-items: center;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
-  border-top: 1px solid #e5e5ea;
   z-index: 1000;
 }
 
@@ -81,23 +126,26 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
-  font-weight: 500;
-  padding: 8px 16px;
+  gap: 4px;
+  width: 75px;
+  height: 75px;
   border-radius: 8px;
-  color: var(--bg-white);
-  background-color: var(--accent-blue);
+  font-size: 11px;
+  font-weight: 500;
   transition: all 0.2s;
 }
 
 .tab-item.active {
+  background-color: #ffffff;
   color: var(--accent-blue);
-  background-color: var(--bg-white);
   border: 1px solid var(--accent-blue);
 }
 
-.tab-item.disabled {
-  color: #8E8E93;
-  background-color: #E5E5EA;
-  cursor: not-allowed;
+.tab-item.inactive {
+  background-color: var(--accent-blue);
+  color: #ffffff;
+}
+
+.tab-icon {
+  font-size: 20px;
 }
