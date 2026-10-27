@@ -1,8 +1,6 @@
-// src/components/TelescopeCard.tsx
 import type { FC } from 'react';
 import { Card } from 'react-bootstrap';
 import type { Telescope } from '../modules/mockTelescopes';
-// Импортируем дефолтную картинку. Убедитесь, что файл лежит в src/assets
 import defaultImage from '../assets/default-image.jpg';
 
 interface Props {
@@ -10,7 +8,6 @@ interface Props {
 }
 
 export const TelescopeCard: FC<Props> = ({ telescope }) => {
-  // Если в мок-данных пусто, используем локальную картинку
   const imageSrc = telescope.imageUrl ? telescope.imageUrl : defaultImage;
 
   return (
@@ -31,5 +28,4 @@ export const TelescopeCard: FC<Props> = ({ telescope }) => {
 };
 
 <Card className="telescope-card">
-   {/* ... */}
 </Card>

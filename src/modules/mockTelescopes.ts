@@ -63,7 +63,7 @@ export const mockTelescopes: Telescope[] = [
     name: 'TESS',
     aperture_cm: 10,
     fov_deg: 24,
-    imageUrl: tessImg,
+    imageUrl: '',
     videoUrl: tessVid,
     likes: 2,
     description: 'Космический телескоп для поиска экзопланет.',

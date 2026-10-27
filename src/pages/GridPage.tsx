@@ -1,32 +1,55 @@
 import { useState } from 'react';
 import { mockTelescopes } from '../modules/mockTelescopes';
 import { TelescopeCard } from '../components/TelescopeCard';
-import { Form, Row, Col, Container } from 'react-bootstrap';
+import { Row, Col, Container } from 'react-bootstrap';
 
 export const GridPage = () => {
-  const [minAperture, setMinAperture] = useState<number>(0);
+  const [sliderValue, setSliderValue] = useState<number>(0);
+  const [appliedValue, setAppliedValue] = useState<number>(0);
+
+  const handleApply = () => {
+    setAppliedValue(sliderValue);
+  };
 
   const filteredTelescopes = mockTelescopes.filter(
-    (t) => t.aperture_cm >= minAperture
+    (t) => t.aperture_cm >= appliedValue
   );
 
   return (
-    // paddingBottom, чтобы контент не уходил под меню
-    <Container className="pt-3" style={{ paddingBottom: '110px' }}>
+    <Container className="pt-2" style={{ paddingBottom: '110px' }}>
 
-      <Form.Group className="mb-4 p-3 bg-light rounded shadow-sm">
-        <Form.Label>Минимальный диаметр: <b>{minAperture} см</b></Form.Label>
-        <Form.Range
-          min={0}
-          max={1000}
-          step={10}
-          value={minAperture}
-          onChange={(e) => setMinAperture(Number(e.target.value))}
-          style={{ accentColor: '#174B9B' }}
-        />
-      </Form.Group>
+      <div className="filter-section">
+        <div className="filter-header">
+          <label className="slider-label">Диаметр от (см):</label>
+          <div className="slider-value-box">{sliderValue}</div>
+        </div>
 
-      <Row xs={2} md={2} className="g-2">
+        <div className="slider-container">
+          <input
+            type="range"
+            min="0"
+            max="1000"
+            step="10"
+            value={sliderValue}
+            onChange={(e) => setSliderValue(Number(e.target.value))}
+            className="custom-range"
+          />
+          <div className="slider-scale">
+            <span>0</span>
+            <span>200</span>
+            <span>400</span>
+            <span>600</span>
+            <span>800</span>
+            <span>1000</span>
+          </div>
+        </div>
+
+        <button className="filter-btn" onClick={handleApply}>
+          Применить
+        </button>
+      </div>
+
+      <Row xs={2} md={2} className="g-2 mt-2">
         {filteredTelescopes.map((telescope) => (
           <Col key={telescope.id}>
             <TelescopeCard telescope={telescope} />

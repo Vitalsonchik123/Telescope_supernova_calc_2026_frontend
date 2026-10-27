@@ -24,7 +24,6 @@ export const FeedPage = () => {
       />
 
       <div className="feed-overlay">
-        {/* Название и параметры */}
         <div className="feed-top-row">
           <h1 className="feed-title">{telescope.name}</h1>
           <div className="feed-right-col">
@@ -34,10 +33,8 @@ export const FeedPage = () => {
           </div>
         </div>
 
-        {/* Описание (без обсерватории, как вы просили) */}
         <p className="feed-desc">{telescope.description}</p>
 
-        {/* Нижняя черная полоса со стрелкой */}
         <div className="feed-bottom-bar">
           <button className="next-arrow-btn" onClick={handleNext} aria-label="Следующий">
             →
