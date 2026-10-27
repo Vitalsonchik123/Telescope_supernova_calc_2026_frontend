@@ -1,75 +1,26 @@
-# React + TypeScript + Vite
+# Telescope Supernova Calc — Frontend (SPA)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Веб-приложение на React + TypeScript для просмотра каталога телескопов.
+В данной лабораторной работе приложение работает автономно на локальных mock-объектах (без подключения к бэкенду). Redux и Context не используются.
 
-Currently, two official plugins are available:
+## Страницы приложения
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Приложение состоит из 4 экранов (переключение через нижнюю панель навигации):
 
-## React Compiler
+1. **Лента (`/feed`)**:
+   - Отображает один выбранный телескоп на фоне автоматически проигрываемого видео.
+   - Элементы: название (оранжевое), диаметр, поле зрения, лайки (сердечко с числом), описание и кнопка-стрелка «Следующий» для перехода к следующему телескопу.
+2. **Плитка (`/grid`)**:
+   - Отображает список всех телескопов в виде сетки карточек (по 2 в ряд).
+   - Элементы: изображение, название, количество лайков, диаметр.
+   - Фильтрация: белый блок с ползунком (от 0 до 1000 см) и кнопкой «Применить». Список фильтруется по минимальному диаметру только после нажатия кнопки.
+3. **Добавление (`/add`)**:
+   - Страница-заглушка (вкладка в меню неактивна, так как добавление новых карточек будет реализовано в следующих лабораторных работах).
+4. **Вход (`/login`)**:
+   - Страница-заглушка (вкладка неактивна, авторизация появится в следующих лабораторных).
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Элементы интерфейса
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
-```
-
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
-```
+- **Нижняя навигационная панель (Tab Bar)**: 4 кнопки. Активными являются только «Лента» и «Плитка». Кнопки «Добавить» и «Вход» заблокированы.
+- **Изображение и видео по умолчанию**: если в mock-данных телескопа поле с медиафайлом пустое, автоматически подставляется картинка или видео из папки `src/assets`.
+- **Карточка телескопа**: переиспользуемый компонент `TelescopeCard`, принимающий данные через `props`.
