@@ -1,14 +1,17 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { mockTelescopes } from '../modules/mockTelescopes';
 import { TelescopeCard } from '../components/TelescopeCard';
 import { Row, Col, Container } from 'react-bootstrap';
 
 export const GridPage = () => {
-  const [sliderValue, setSliderValue] = useState<number>(0);
   const [appliedValue, setAppliedValue] = useState<number>(0);
 
+  const sliderRef = useRef<HTMLInputElement>(null);
+
   const handleApply = () => {
-    setAppliedValue(sliderValue);
+    if (sliderRef.current) {
+      setAppliedValue(Number(sliderRef.current.value));
+    }
   };
 
   const filteredTelescopes = mockTelescopes.filter(
@@ -21,7 +24,7 @@ export const GridPage = () => {
       <div className="filter-section">
         <div className="filter-header">
           <label className="slider-label">Диаметр от (см):</label>
-          <div className="slider-value-box">{sliderValue}</div>
+          <div className="slider-value-box">{appliedValue}</div>
         </div>
 
         <div className="slider-container">
@@ -30,8 +33,8 @@ export const GridPage = () => {
             min="0"
             max="1000"
             step="10"
-            value={sliderValue}
-            onChange={(e) => setSliderValue(Number(e.target.value))}
+            defaultValue={appliedValue}
+            ref={sliderRef} // 5. Привязываем ref
             className="custom-range"
           />
           <div className="slider-scale">
