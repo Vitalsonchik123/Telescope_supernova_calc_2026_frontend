@@ -23,15 +23,16 @@ export const LoginPage = () => {
     try {
       const response = await axiosInstance.post('/users/login', { name, password });
 
-      const { token, user } = response.data.data;
+      const { token, user } = response.data;
 
       localStorage.setItem('token', token);
 
-      // Вручную обновляем Redux состояние
       dispatch(setCredentials({ user }));
 
       navigate('/');
     } catch (err: any) {
+      console.error("Ошибка при входе:", err.response?.data || err.message);
+
       const errorMessage = err.response?.data?.message || 'Ошибка входа. Проверьте логин и пароль.';
       setError(errorMessage);
     } finally {

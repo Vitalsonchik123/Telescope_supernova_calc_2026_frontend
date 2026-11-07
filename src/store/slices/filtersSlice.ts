@@ -1,23 +1,32 @@
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
+import type { PayloadAction } from '@reduxjs/toolkit';
 
 interface FiltersState {
   minAperture: number;
+  sliderPosition: number; // запоминает позицию
 }
 
-const initialState: FiltersState = { minAperture: 0 };
+const initialState: FiltersState = {
+  minAperture: 0,
+  sliderPosition: 0,
+};
 
 const filtersSlice = createSlice({
   name: 'filters',
   initialState,
   reducers: {
-    setMinAperture: (state, action: PayloadAction<number>) => {
-      state.minAperture = action.payload;
+    setSliderPosition: (state, action: PayloadAction<number>) => {
+      state.sliderPosition = action.payload;
+    },
+    applyFilter: (state) => {
+      state.minAperture = state.sliderPosition;
     },
     resetFilters: (state) => {
       state.minAperture = 0;
-    }
+      state.sliderPosition = 0;
+    },
   },
 });
 
-export const { setMinAperture, resetFilters } = filtersSlice.actions;
+export const { setSliderPosition, applyFilter, resetFilters } = filtersSlice.actions;
 export default filtersSlice.reducer;

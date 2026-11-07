@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { FeedPage } from './pages/FeedPage';
 import { GridPage } from './pages/GridPage';
+import { LoginPage } from './pages/LoginPage';
 import { StubPage } from './pages/StubPage';
 import { BottomTabBar } from './components/BottomTabBar';
 import './App.css'; // Подключаем стили
@@ -16,7 +17,7 @@ function App() {
             <Route path="/feed" element={<FeedPage />} />
             <Route path="/grid" element={<GridPage />} />
             <Route path="/add" element={<StubPage />} />
-            <Route path="/login" element={<StubPage />} />
+            <Route path="/login" element={<LoginPage />} />
           </Routes>
         </div>
 

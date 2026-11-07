@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
 import { Container, Spinner, Button } from 'react-bootstrap';
 import defaultVideo from '../assets/default-video.mp4';
+import defaultImage from '../assets/default-image.jpg';
 import { TelescopesService } from '../api/generated';
+import { HeartFill } from 'react-bootstrap-icons';
 
 export const FeedPage = () => {
   const [telescope, setTelescope] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Загружаем первый элемент при монтировании
   useEffect(() => {
     fetchFeed();
   }, []);
@@ -17,10 +18,11 @@ export const FeedPage = () => {
     setIsLoading(true);
     setError(null);
     try {
-      // Вызов API ленты
-      const data = await TelescopesService.getFeed(id, next);
-      setTelescope(data);
+      const response = await TelescopesService.getFeed(id, next);
+      const actualTelescope = response.data ? response.data : response;
+      setTelescope(actualTelescope);
     } catch (err: any) {
+      console.error(err);
       setError('Ошибка загрузки ленты');
     } finally {
       setIsLoading(false);
@@ -49,20 +51,28 @@ export const FeedPage = () => {
     return <Container className="text-center pt-5">Лента пуста</Container>;
   }
 
-  // Обработка медиа (если бэкенд возвращает ключи MinIO, нужно склеить с URL MinIO)
-  // Предполагаем, что бэкенд возвращает готовые URL, либо используем дефолтные
   const videoSrc = telescope.video_url || defaultVideo;
+  const imageSrc = telescope.image_url || defaultImage;
 
   return (
     <div className="feed-container">
-      <video
-        src={videoSrc}
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="feed-video"
-      />
+      {telescope.video_url ? (
+        <video
+          src={videoSrc}
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="feed-video"
+        />
+      ) : (
+        <img
+          src={imageSrc}
+          alt={telescope.name}
+          className="feed-video"
+          style={{ objectFit: 'cover' }}
+        />
+      )}
 
       <div className="feed-overlay">
         <div className="feed-top-row">
@@ -70,7 +80,10 @@ export const FeedPage = () => {
           <div className="feed-right-col">
             <span>Диаметр: {telescope.aperture_cm} см</span>
             <span>Поле зрения: {telescope.fov_deg}°</span>
-            <span className="feed-likes">❤ {telescope.likes_count || 0}</span>
+            <span className="feed-likes">
+              <HeartFill color="#FF9400" className="me-1 mb-1" />
+              {telescope.likes_count || 0}
+            </span>
           </div>
         </div>
 
