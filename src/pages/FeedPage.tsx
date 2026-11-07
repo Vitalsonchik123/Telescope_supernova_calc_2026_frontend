@@ -1,16 +1,57 @@
-import { useState } from 'react';
-import { mockTelescopes } from '../modules/mockTelescopes';
+import { useState, useEffect } from 'react';
+import { Container, Spinner, Button } from 'react-bootstrap';
 import defaultVideo from '../assets/default-video.mp4';
+import { TelescopesService } from '../api/generated';
 
 export const FeedPage = () => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const telescope = mockTelescopes[currentIndex];
+  const [telescope, setTelescope] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleNext = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % mockTelescopes.length);
+  // Загружаем первый элемент при монтировании
+  useEffect(() => {
+    fetchFeed();
+  }, []);
+
+  const fetchFeed = async (id?: number, next: boolean = false) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      // Вызов API ленты
+      const data = await TelescopesService.getFeed(id, next);
+      setTelescope(data);
+    } catch (err: any) {
+      setError('Ошибка загрузки ленты');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const videoSrc = telescope.videoUrl ? telescope.videoUrl : defaultVideo;
+  const handleNext = () => {
+    if (telescope) {
+      fetchFeed(telescope.id, true);
+    }
+  };
+
+  if (isLoading && !telescope) {
+    return (
+      <Container className="text-center pt-5">
+        <Spinner animation="border" />
+      </Container>
+    );
+  }
+
+  if (error) {
+    return <Container className="text-center pt-5 text-danger">{error}</Container>;
+  }
+
+  if (!telescope) {
+    return <Container className="text-center pt-5">Лента пуста</Container>;
+  }
+
+  // Обработка медиа (если бэкенд возвращает ключи MinIO, нужно склеить с URL MinIO)
+  // Предполагаем, что бэкенд возвращает готовые URL, либо используем дефолтные
+  const videoSrc = telescope.video_url || defaultVideo;
 
   return (
     <div className="feed-container">
@@ -29,16 +70,21 @@ export const FeedPage = () => {
           <div className="feed-right-col">
             <span>Диаметр: {telescope.aperture_cm} см</span>
             <span>Поле зрения: {telescope.fov_deg}°</span>
-            <span className="feed-likes">❤ {telescope.likes}</span>
+            <span className="feed-likes">❤ {telescope.likes_count || 0}</span>
           </div>
         </div>
 
         <p className="feed-desc">{telescope.description}</p>
 
         <div className="feed-bottom-bar">
-          <button className="next-arrow-btn" onClick={handleNext} aria-label="Следующий">
-            →
-          </button>
+          <Button
+            className="next-arrow-btn"
+            onClick={handleNext}
+            disabled={isLoading}
+            aria-label="Следующий"
+          >
+            {isLoading ? <Spinner animation="border" size="sm" /> : '→'}
+          </Button>
         </div>
       </div>
     </div>

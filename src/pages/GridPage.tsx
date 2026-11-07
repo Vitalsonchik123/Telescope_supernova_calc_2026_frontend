@@ -1,26 +1,46 @@
-import { useState, useRef } from 'react';
-import { mockTelescopes } from '../modules/mockTelescopes';
+import { useState, useRef, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import type { RootState } from '../store';
+import { setMinAperture } from '../store/slices/filtersSlice';
 import { TelescopeCard } from '../components/TelescopeCard';
-import { Row, Col, Container } from 'react-bootstrap';
+import { Row, Col, Container, Spinner, Alert } from 'react-bootstrap';
+import { TelescopesService } from '../api/generated'; // Импорт сгенерированного клиента
 
 export const GridPage = () => {
-  const [appliedValue, setAppliedValue] = useState<number>(0);
+  const dispatch = useDispatch();
+  // значение из Redux
+  const appliedValue = useSelector((state: RootState) => state.filters.minAperture);
 
+  const [telescopes, setTelescopes] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const sliderRef = useRef<HTMLInputElement>(null);
 
-  const handleApply = () => {
-    if (sliderRef.current) {
-      setAppliedValue(Number(sliderRef.current.value));
+  useEffect(() => {
+    fetchTelescopes();
+  }, [appliedValue]);
+
+  const fetchTelescopes = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const data = await TelescopesService.getTelescopes(appliedValue);
+      setTelescopes(data || []);
+    } catch (err: any) {
+      setError('Ошибка при загрузке данных. Проверьте бэкенд.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const filteredTelescopes = mockTelescopes.filter(
-    (t) => t.aperture_cm >= appliedValue
-  );
+  const handleApply = () => {
+    if (sliderRef.current) {
+      dispatch(setMinAperture(Number(sliderRef.current.value)));
+    }
+  };
 
   return (
     <Container className="pt-2" style={{ paddingBottom: '110px' }}>
-
       <div className="filter-section">
         <div className="filter-header">
           <label className="slider-label">Диаметр от (см):</label>
@@ -34,7 +54,7 @@ export const GridPage = () => {
             max="1000"
             step="10"
             defaultValue={appliedValue}
-            ref={sliderRef} // 5. Привязываем ref
+            ref={sliderRef}
             className="custom-range"
           />
           <div className="slider-scale">
@@ -47,13 +67,15 @@ export const GridPage = () => {
           </div>
         </div>
 
-        <button className="filter-btn" onClick={handleApply}>
-          Применить
+        <button className="filter-btn" onClick={handleApply} disabled={isLoading}>
+          {isLoading ? <Spinner animation="border" size="sm" /> : 'Применить'}
         </button>
       </div>
 
+      {error && <Alert variant="danger">{error}</Alert>}
+
       <Row xs={2} md={2} className="g-2 mt-2">
-        {filteredTelescopes.map((telescope) => (
+        {telescopes.map((telescope) => (
           <Col key={telescope.id}>
             <TelescopeCard telescope={telescope} />
           </Col>
