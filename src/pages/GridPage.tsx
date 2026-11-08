@@ -1,38 +1,37 @@
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../store';
-// ИСПРАВЛЕНИЕ: Импортируем новые экшены из обновленного слайса
 import { setSliderPosition, applyFilter } from '../store/slices/filtersSlice';
 import { TelescopeCard } from '../components/TelescopeCard';
-import { Row, Col, Container, Spinner, Alert } from 'react-bootstrap';
+import { Row, Col, Container, Spinner } from 'react-bootstrap';
 import { TelescopesService } from '../api/generated';
+import { mockTelescopes } from '../modules/mockTelescopes';
 
 export const GridPage = () => {
   const dispatch = useDispatch();
 
-  // Получаем оба значения из Redux
   const appliedValue = useSelector((state: RootState) => state.filters.minAperture);
   const sliderPos = useSelector((state: RootState) => state.filters.sliderPosition);
 
   const [telescopes, setTelescopes] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  // Запрос отправляется ТОЛЬКО когда меняется appliedValue (после нажатия кнопки)
   useEffect(() => {
     fetchTelescopes();
   }, [appliedValue]);
 
   const fetchTelescopes = async () => {
     setIsLoading(true);
-    setError(null);
     try {
       const response = await TelescopesService.getTelescopes(appliedValue);
       const actualData = Array.isArray(response) ? response : response.data;
       setTelescopes(actualData || []);
     } catch (err: any) {
-      console.error(err);
-      setError('Ошибка при загрузке данных. Проверьте бэкенд.');
+      // FALLBACK (МОКИ)
+      const filteredMocks = mockTelescopes.filter(
+        (t) => t.aperture_cm >= appliedValue
+      );
+      setTelescopes(filteredMocks);
     } finally {
       setIsLoading(false);
     }
@@ -43,7 +42,6 @@ export const GridPage = () => {
       <div className="filter-section">
         <div className="filter-header">
           <label className="slider-label">Диаметр от (см):</label>
-          {/* Показываем appliedValue. Цифра меняется только по кнопке! */}
           <div className="slider-value-box">{appliedValue}</div>
         </div>
 
@@ -53,7 +51,6 @@ export const GridPage = () => {
             min="0"
             max="1000"
             step="10"
-            // ИСПРАВЛЕНИЕ: Используем value и onChange вместо defaultValue и ref
             value={sliderPos}
             onChange={(e) => dispatch(setSliderPosition(Number(e.target.value)))}
             className="custom-range"
@@ -68,13 +65,10 @@ export const GridPage = () => {
           </div>
         </div>
 
-        {/* ИСПРАВЛЕНИЕ: Вызываем applyFilter для применения значения */}
         <button className="filter-btn" onClick={() => dispatch(applyFilter())} disabled={isLoading}>
           {isLoading ? <Spinner animation="border" size="sm" /> : 'Применить'}
         </button>
       </div>
-
-      {error && <Alert variant="danger">{error}</Alert>}
 
       <Row xs={2} md={2} className="g-2 mt-2">
         {telescopes.map((telescope) => (
