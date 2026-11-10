@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export const axiosInstance = axios.create({
-  baseURL: '/api', // Благодаря прокси Vite, запросы пойдут на бэкенд
+  baseURL: '/api',
 });
 
 axiosInstance.interceptors.request.use((config) => {

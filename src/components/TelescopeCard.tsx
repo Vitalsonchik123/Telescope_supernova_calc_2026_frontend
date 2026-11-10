@@ -21,23 +21,18 @@ export const TelescopeCard: FC<Props> = ({ telescope, onRefresh }) => {
     telescope.is_liked || localStorage.getItem(`like_${telescope.id}`) === 'true'
   );
 
-  // Поддержка обоих вариантов поля лайков
   const [likesCount, setLikesCount] = useState(
     telescope.likes_count !== undefined ? telescope.likes_count : (telescope.likes || 0)
   );
 
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
-  const user = useSelector((state: RootState) => state.auth.user);
 
   const navigate = useNavigate();
-
-  // ИСПРАВЛЕНИЕ: Поддержка и image_url (бэкенд) и imageUrl (моки)
   const imageSrc = telescope.image_url || telescope.imageUrl || defaultImage;
 
   useEffect(() => {
     const count = telescope.likes_count !== undefined ? telescope.likes_count : (telescope.likes || 0);
     setLikesCount(count);
-
     const storedLike = localStorage.getItem(`like_${telescope.id}`);
     if (storedLike !== null) {
       setIsLiked(storedLike === 'true');
@@ -57,7 +52,6 @@ export const TelescopeCard: FC<Props> = ({ telescope, onRefresh }) => {
     setIsLiking(true);
     const prevIsLiked = isLiked;
     const prevCount = likesCount;
-
     setIsLiked(!prevIsLiked);
     setLikesCount(prevIsLiked ? prevCount - 1 : prevCount + 1);
 
@@ -69,7 +63,7 @@ export const TelescopeCard: FC<Props> = ({ telescope, onRefresh }) => {
       console.error(e);
       setIsLiked(prevIsLiked);
       setLikesCount(prevCount);
-      alert('Ошибка при лайке. Возможно, сервер недоступен.');
+      alert('Ошибка при лайке.');
     } finally {
       setIsLiking(false);
     }
@@ -84,41 +78,27 @@ export const TelescopeCard: FC<Props> = ({ telescope, onRefresh }) => {
       onRefresh();
     } catch (e) {
       console.error(e);
-      alert('Ошибка удаления');
+      alert('Ошибка удаления. Возможно, у вас нет прав.');
     } finally {
       setIsDeleting(false);
     }
   };
 
-  const isAuthor = user && telescope.user_id === user.id;
-
   const visuallyLiked = isAuthenticated && isLiked;
-
   const buttonColor = !isAuthenticated ? '#adb5bd' : (visuallyLiked ? '#fff' : '#FF9400');
   const buttonBgColor = !isAuthenticated ? '#f8f9fa' : (visuallyLiked ? '#FF9400' : '#fff');
   const buttonBorderColor = !isAuthenticated ? '#ced4da' : '#FF9400';
 
   return (
-    <Card
-      className="h-100 shadow-sm"
-      onClick={handleCardClick}
-      style={{ cursor: 'pointer' }}
-    >
-      <Card.Img
-        variant="top"
-        src={imageSrc}
-        style={{ height: '120px', objectFit: 'cover' }}
-      />
+    <Card className="h-100 shadow-sm" onClick={handleCardClick} style={{ cursor: 'pointer' }}>
+      <Card.Img variant="top" src={imageSrc} style={{ height: '120px', objectFit: 'cover' }} />
       <Card.Body className="p-2 d-flex flex-column justify-content-between">
         <div>
           <Card.Title style={{ fontSize: '14px', marginBottom: '5px' }}>
             {telescope.name}
           </Card.Title>
           <Card.Text className="text-muted" style={{ fontSize: '12px' }}>
-            <HeartFill
-              color={visuallyLiked ? "#FF9400" : "#ccc"}
-              className="me-1 mb-1"
-            />
+            <HeartFill color={visuallyLiked ? "#FF9400" : "#ccc"} className="me-1 mb-1" />
             {likesCount} | Диаметр: {telescope.aperture_cm} см
           </Card.Text>
         </div>
@@ -129,35 +109,22 @@ export const TelescopeCard: FC<Props> = ({ telescope, onRefresh }) => {
             size="sm"
             onClick={handleLike}
             disabled={isLiking || !isAuthenticated}
-            style={{
-              padding: '2px 8px',
-              fontSize: '12px',
-              color: buttonColor,
-              backgroundColor: buttonBgColor,
-              borderColor: buttonBorderColor,
-              cursor: !isAuthenticated ? 'not-allowed' : 'pointer'
-            }}
-            title={!isAuthenticated ? "Войдите, чтобы ставить лайки" : ""}
+            style={{ padding: '2px 8px', fontSize: '12px', color: buttonColor, backgroundColor: buttonBgColor, borderColor: buttonBorderColor }}
           >
-            {isLiking ? (
-              <Spinner size="sm" animation="border" />
-            ) : (
-              <>
-                <HeartFill className="me-1" style={{ marginBottom: '2px' }} />
-                {visuallyLiked ? 'Убрать лайк' : 'Поставить лайк'}
-              </>
-            )}
+            {isLiking ? <Spinner size="sm" animation="border" /> : <><HeartFill className="me-1" /> Лайк</>}
           </Button>
 
-          {isAuthor && (
+          {/* Кнопка удаления доступна ВСЕМ авторизованным пользователям */}
+          {isAuthenticated && (
             <Button
               variant="danger"
               size="sm"
               onClick={handleDelete}
               disabled={isDeleting}
               style={{ padding: '2px 8px', fontSize: '12px' }}
+              title="Удалить"
             >
-               {isDeleting ? <Spinner size="sm" animation="border" /> : 'Удалить'}
+              {isDeleting ? <Spinner size="sm" animation="border" /> : 'Удалить'}
             </Button>
           )}
         </div>

@@ -12,7 +12,6 @@ export const GridPage = () => {
 
   const appliedValue = useSelector((state: RootState) => state.filters.minAperture);
   const sliderPos = useSelector((state: RootState) => state.filters.sliderPosition);
-
   const [telescopes, setTelescopes] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -27,7 +26,6 @@ export const GridPage = () => {
       const actualData = Array.isArray(response) ? response : response.data;
       setTelescopes(actualData || []);
     } catch (err: any) {
-      // FALLBACK (МОКИ)
       const filteredMocks = mockTelescopes.filter(
         (t) => t.aperture_cm >= appliedValue
       );
